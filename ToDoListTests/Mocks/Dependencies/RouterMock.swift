@@ -11,6 +11,8 @@ class RouterMock: Router {
     var curentModule: Module?
     var currentError: (any Error)?
     var currentAction: String?
+    var confirmHandler: (()->Void)?
+    var actionHandler: (()->Void)?
     
     func showError(_ error: any Error) {
         self.currentError = error
@@ -25,6 +27,8 @@ class RouterMock: Router {
     func showError(_ error: any Error, action: String, actionHandler: @escaping () -> Void, confirmHandler: @escaping () -> Void) {
         self.currentError = error
         self.currentAction = action
+        self.confirmHandler = confirmHandler
+        self.actionHandler = actionHandler
     }
     
     func go(_ module: ToDoList.Module) {

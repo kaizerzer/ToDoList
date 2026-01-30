@@ -56,4 +56,26 @@ final class ToDoListViewState: ObservableObject, ToDoListViewProtocol {
             }
         }
     }
+    
+    func setLoading( _ loading: Bool) {
+        DispatchQueue.main.async {
+            self.loading = loading
+        }
+    }
+    func setItems(_ items: [ToDoItem], animated: Bool) {
+        DispatchQueue.main.async {
+            if animated {
+                withAnimation(.linear(duration: 0.1)) {
+                    self.items = items
+                }
+            } else {
+                self.items = items
+            }
+        }
+    }
+    func setTasksCountPlural(_ plural: String) {
+        DispatchQueue.main.async {
+            self.tasksCountPlural = plural
+        }
+    }
 }

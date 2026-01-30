@@ -5,8 +5,6 @@
 //  Created by Anton Kaizer on 28.01.26.
 //
 
-import Foundation
-
 final class ToDoListPresenter: ToDoListPresenterProtocol {
     var interactor: ToDoListInteractorProtocol
     weak var view: ToDoListViewProtocol?
@@ -19,15 +17,17 @@ final class ToDoListPresenter: ToDoListPresenterProtocol {
     }
     
     func onAppear() {
-        self.view?.loading = true
+        self.view?.setLoading(true)
         self.interactor.performInitialLoadingIfNeeded { [weak self] error, retry in
             if let error = error {
                 self?.router.showError(error, action: "Повторить", actionHandler: retry) {
+                    self?.view?.setLoading(false)
                     self?.reloadList(nil)
                 }
                 return
             }
             
+            self?.view?.setLoading(false)
             self?.reloadList(nil)
         }
     }
@@ -39,10 +39,7 @@ final class ToDoListPresenter: ToDoListPresenterProtocol {
                 self?.router.showError(error)
                 return
             }
-            DispatchQueue.main.async {
-                self?.view?.loading = false
-                self?.updateItems(items)
-            }
+            self?.updateItems(items)
         }
         
         if let searchText = searchText, !searchText.isEmpty {
@@ -58,9 +55,7 @@ final class ToDoListPresenter: ToDoListPresenterProtocol {
                 self?.router.showError(error)
                 return
             }
-            DispatchQueue.main.async {
-                self?.updateTaskCountPlural()
-            }
+            self?.updateTaskCountPlural()
         }
     }
     
@@ -74,14 +69,7 @@ final class ToDoListPresenter: ToDoListPresenterProtocol {
                 self?.router.showError(error)
                 return
             }
-            if let index = self?.view?.items.firstIndex(where: { $0.id == item.id }) {
-                DispatchQueue.main.async {
-                    self?.view?.itemsChangeAnimation {
-                        self?.view?.items.remove(at: index)
-                    }
-                    self?.updateTaskCountPlural()
-                }
-            }
+            self?.reloadList(nil)
         }
     }
     
@@ -94,15 +82,14 @@ final class ToDoListPresenter: ToDoListPresenterProtocol {
     }
     
     func updateItems(_ items: [ToDoItem]) {
-        self.view?.itemsChangeAnimation {
-            self.view?.items = items
-        }
-        updateTaskCountPlural()
+        self.view?.setItems(items, animated: true)
+        self.updateTaskCountPlural(items)
     }
     
-    func updateTaskCountPlural() {
+    func updateTaskCountPlural(_ items: [ToDoItem]? = nil) {
         guard let view = self.view else { return }
-        view.tasksCountPlural = self.tasksCountPlural(view.items.count { !$0.completed })
+        let items = items ?? view.items
+        view.setTasksCountPlural(self.tasksCountPlural(items.count { !$0.completed }))
     }
     
     func tasksCountPlural(_ count: Int) -> String {

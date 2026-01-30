@@ -24,10 +24,12 @@ protocol ToDoListPresenterProtocol: AnyObject {
 }
 
 protocol ToDoListViewProtocol: AnyObject {
-    var loading: Bool { get set }
-    var items: [ToDoItem] { get set }
-    var tasksCountPlural: String { get set }
+    var loading: Bool { get }
+    var items: [ToDoItem] { get }
+    var tasksCountPlural: String { get }
     var searchText: String { get }
     
-    var itemsChangeAnimation: (() -> Void) -> Void { get }
+    func setLoading( _ loading: Bool)
+    func setItems(_ items: [ToDoItem], animated: Bool)
+    func setTasksCountPlural(_ plural: String)
 }
