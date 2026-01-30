@@ -19,7 +19,7 @@ final class ToDoListInteractor: ToDoListInteractorProtocol {
     }
     
     func performInitialLoadingIfNeeded(_ completion: @escaping (Error?, @escaping () -> Void) -> Void) {
-//        if !self.settingsRepository.firstLaunch {
+        if !self.settingsRepository.firstLaunch {
             var loadData: (() -> Void)!
             loadData = { [weak self] in
                 self?.toDoService.loadToDoItem { items, error in
@@ -34,9 +34,9 @@ final class ToDoListInteractor: ToDoListInteractorProtocol {
             }
             loadData()
             self.settingsRepository.firstLaunch = true
-//        } else {
-//            completion(nil, {})
-//        }
+        } else {
+            completion(nil, {})
+        }
     }
     
     func searchToDoItems(_ searchString: String, _ completion: @escaping ([ToDoItem], Error?) -> Void) {
