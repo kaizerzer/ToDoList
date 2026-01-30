@@ -32,8 +32,6 @@ struct ToDoListApp: App {
         
         router.dependencyContainer = dependencyContainer
         self.router = router
-        
-        UITextView.appearance().textContainerInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
 
     var body: some Scene {
