@@ -174,7 +174,7 @@ struct ToDoItemCell: View {
                     ZStack(alignment: .center) {
                         Circle()
                             .stroke(item.completed ? Color.accent : Color.appStroke)
-                        Image("checkmark")
+                        Image("checkmark_icon")
                             .resizable()
                             .scaledToFit()
                             .frame(width: checkmarkWidth)

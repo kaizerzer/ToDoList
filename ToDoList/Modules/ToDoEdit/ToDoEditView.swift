@@ -26,6 +26,9 @@ struct ToDoEditView: View {
                     .focused($focusedField, equals: .title)
                     .font(.system(size: titleFontSize))
                     .fontWeight(.bold)
+                    .onTapGesture {
+                        focusedField = .title
+                    }
                 
                 Text(viewState.date.formatted(date: .numeric, time: .omitted))
                     .font(.system(size: dateFontSize))
