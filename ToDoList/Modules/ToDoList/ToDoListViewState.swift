@@ -49,14 +49,6 @@ final class ToDoListViewState: ObservableObject, ToDoListViewProtocol {
             .store(in: &cancelables)
     }
     
-    var itemsChangeAnimation: (() -> Void) -> Void {
-        get {
-            { block in
-                withAnimation(.linear(duration: 0.1), block)
-            }
-        }
-    }
-    
     func setLoading( _ loading: Bool) {
         DispatchQueue.main.async {
             self.loading = loading

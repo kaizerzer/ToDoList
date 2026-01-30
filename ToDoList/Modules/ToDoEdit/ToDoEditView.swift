@@ -68,6 +68,6 @@ extension ToDoEditView {
 #Preview {
     NavigationStack{
         ToDoEditView(viewState: ToDoEditView.mockState())
-            .navigationTitle(" ")
+            .navigationTitle("Редактирвоание")
     }
 }

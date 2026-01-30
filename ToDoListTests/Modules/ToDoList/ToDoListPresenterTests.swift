@@ -9,11 +9,11 @@ import Testing
 import Foundation
 @testable import ToDoList
 
-enum MockError: Error {
-    case simpleError
-}
-
 struct ToDoListPresenterTests {
+    enum MockError: Error {
+        case simpleError
+    }
+
     let presenter: ToDoListPresenter
     let interactorMock = ToDoListInteractorMock()
     let viewMock = ToDoListViewMock()
