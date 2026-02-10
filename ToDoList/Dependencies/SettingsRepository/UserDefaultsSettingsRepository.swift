@@ -7,7 +7,7 @@
 
 import Foundation
 
-class UserDefaultsSettingsRepository: SettingsRepository {
+final class UserDefaultsSettingsRepository: SettingsRepository {
     var firstLaunch: Bool {
         get {
             UserDefaults.standard.bool(forKey: "firstLaunch")

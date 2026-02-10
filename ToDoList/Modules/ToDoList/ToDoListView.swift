@@ -10,12 +10,6 @@ import SwiftUI
 struct ToDoListView: View {
     @StateObject var viewState: ToDoListViewState
     
-    @ScaledMetric(relativeTo: .body) var toolbarFontSize: CGFloat = 11
-    @ScaledMetric(relativeTo: .title) var toolbarIconSize: CGFloat = 17
-    @ScaledMetric var toolbarIconLeadingPadding: CGFloat = 1
-    @ScaledMetric var toolbarIconBottomPadding: CGFloat = 3
-    @ScaledMetric(relativeTo: .title) var contextMenuFontSize: CGFloat = 17
-    
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
     
     @State var screenWidth: CGFloat = 0
@@ -27,28 +21,11 @@ struct ToDoListView: View {
                     ToDoItemCell(item: $item)
                         .onTapGesture {
                             withAnimation(.linear(duration: 0.1)) {
-                                viewState.itemToggled(&item)
+                                self.viewState.itemToggled(&item)
                             }
                         }
                         .contextMenu(menuItems: {
-                            Group {
-                                Button(action: {
-                                    self.viewState.editItem(item)
-                                }) {
-                                    Label("Редактировать", image: "context_menu_edit_icon")
-                                }
-                                ShareLink(item: item.title, message: item.description != nil ? Text(item.description!) : nil ){
-                                    Label("Поделиться", image: "context_menu_share_icon")
-                                }
-                                Button(role: .destructive, action: {
-                                    withAnimation(.linear(duration: 0.1)) {
-                                        self.viewState.deleteItem(item)
-                                    }
-                                }) {
-                                    Label("Удалить", image: "context_menu_delete_icon")
-                                }
-                            }
-                            .font(.system(size: contextMenuFontSize))
+                            ToDoItemContextMenu(item: item, viewState: viewState)
                         }, preview: {
                             ToDoItemCellContent(item: item, completed: false)
                                 .padding()
@@ -71,30 +48,7 @@ struct ToDoListView: View {
         }
         .navigationTitle("Задачи")
         .toolbar {
-            ToolbarItemGroup(placement: .bottomBar) {
-                Spacer()
-                if viewState.loading {
-                    ProgressView()
-                } else {
-                    Text(viewState.tasksCountPlural)
-                        .font(.system(size: toolbarFontSize))
-                        .fixedSize()
-                }
-                
-                Spacer()
-            }
-            .liquidGlassNoBackground()
-            ToolbarItem(placement: .bottomBar) {
-                Button {
-                    self.viewState.createItem()
-                } label: {
-                    Image(systemName: "square.and.pencil")
-                        .foregroundStyle(Color.accent)
-                        .font(.system(size: toolbarIconSize))
-                        .padding(.bottom, toolbarIconBottomPadding)
-                        .padding(.leading, toolbarIconLeadingPadding)
-                }
-            }
+            ToDoToolbarContent(viewState: viewState)
         }
         .searchable(text: $viewState.searchText, placement: .navigationBarDrawer, prompt: "Поиск")
         .task {
@@ -107,6 +61,70 @@ struct ToDoListView: View {
         static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
             value = nextValue()
         }
+    }
+}
+
+struct ToDoToolbarContent: ToolbarContent {
+    @ObservedObject var viewState: ToDoListViewState
+    
+    @ScaledMetric(relativeTo: .body) var toolbarFontSize: CGFloat = 11
+    @ScaledMetric(relativeTo: .title) var toolbarIconSize: CGFloat = 17
+    @ScaledMetric var toolbarIconLeadingPadding: CGFloat = 1
+    @ScaledMetric var toolbarIconBottomPadding: CGFloat = 3
+    
+    var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .bottomBar) {
+            Spacer()
+            if viewState.loading {
+                ProgressView()
+            } else {
+                Text(viewState.tasksCountPlural)
+                    .font(.system(size: toolbarFontSize))
+                    .fixedSize()
+            }
+            
+            Spacer()
+        }
+        .liquidGlassNoBackground()
+        ToolbarItem(placement: .bottomBar) {
+            Button {
+                self.viewState.createItem()
+            } label: {
+                Image(systemName: "square.and.pencil")
+                    .foregroundStyle(Color.accent)
+                    .font(.system(size: toolbarIconSize))
+                    .padding(.bottom, toolbarIconBottomPadding)
+                    .padding(.leading, toolbarIconLeadingPadding)
+            }
+        }
+    }
+}
+
+struct ToDoItemContextMenu: View {
+    let item: ToDoItem
+    @ObservedObject var viewState: ToDoListViewState
+    
+    @ScaledMetric(relativeTo: .title) var fontSize: CGFloat = 17
+    
+    var body: some View {
+        Group {
+            Button(action: {
+                self.viewState.editItem(item)
+            }) {
+                Label("Редактировать", image: "context_menu_edit_icon")
+            }
+            ShareLink(item: item.title, message: item.description != nil ? Text(item.description!) : nil ){
+                Label("Поделиться", image: "context_menu_share_icon")
+            }
+            Button(role: .destructive, action: {
+                withAnimation(.linear(duration: 0.1)) {
+                    self.viewState.deleteItem(item)
+                }
+            }) {
+                Label("Удалить", image: "context_menu_delete_icon")
+            }
+        }
+        .font(.system(size: fontSize))
     }
 }
 
